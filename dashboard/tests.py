@@ -14,10 +14,10 @@ class UserTestCast(TestCase):
         user_a.is_superuser=True
         user_a.set_password('root123')
         user_a.save()
-        print(user_a.id)
-    
+        
     def test_user_exists(self):
         user_count=User.objects.all().count()
-        print(user_count)
         self.assertEqual(user_count,1)
         self.assertNotEqual(user_count,0)
+    
+   
