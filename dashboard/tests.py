@@ -1,13 +1,16 @@
 from django.conf import settings
 from django.test import TestCase
 from django.contrib.auth import get_user_model
+from django.test import Client
+from .forms import NotesForm
+from django.urls import reverse
 
 # Create your tests here.
 # TDD
 
 User=get_user_model()
 
-class UserTestCast(TestCase):
+class UserTestCase(TestCase):
 
     def setUp(self):
         user_a=User(username='testAdmin',email='testAdmin@gmail.com')
@@ -26,7 +29,11 @@ class UserTestCast(TestCase):
         self.assertNotEqual(user_count,0)   # checking not equal
     
     def test_user_password(self):
-        self.assertTrue(self.user_a.check_password(self.user_a_pw))
+        user_a = User.objects.get(username="testAdmin")
+        self.assertTrue(
+            user_a.check_password(self.user_a_pw)
+        )
+    
 
     def test_login_url(self):
         # login_url="/login/"
@@ -43,12 +50,39 @@ class UserTestCast(TestCase):
         response=self.client.post(login_url,data,
         follow=True)
         # print(dir(response))
-        print(response.request)
+        # print(response.request)
 
         status_code=response.status_code
         redirect_path=response.request.get("PATH_INFO")
         # self.assertEqual(redirect_path,settings.LOGIN_REDIRECT_URL)
         # self.assertEqual(status_code,200)
+    
+    def test_notes_url(self):
+        
+        self.client.login(username=self.user_a.username,password='testAdminPassword')
+        url = reverse('notes')
+        # response=self.client.get(url)
+        response=self.client.post(url,{"user":self.user_a,"title":"notesTest","description":"notesTest"})
+        self.assertTrue(response.status_code!=200)
+        
+        
+        
+
+
+    
+
+# class viewTestCase(TestCase):
+
+#     def setUp(self):
+
+#         user_b=User.objects.create_user('testAdmin','testAdmin@gmail.com','testAdminPassword')
+
+#         self.user_b=user_b
+#         user_count=User.objects.all().count()
+
+#         self.assertEquals(user_count,1)
+
+
 
 
 
